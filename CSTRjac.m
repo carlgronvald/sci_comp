@@ -13,10 +13,8 @@ k0 = parameters('k0');
 EaonR = parameters('Ea');
 
 k = k0*exp(-EaonR/x(3));
-r = x(1)*x(2)*k;
-dx = [ fv*(parameters('CAin') - x(1)); ...
-        fv*(parameters('CBin')-x(2)); ...
-        fv*(parameters('Tin')-x(3))];
-
+jac = [ -fv +x(2)*k x(1)*k  -EaonR*k*x(1)*x(2); ...
+        x(2)*k  -fv+x(1)*k -EaonR*k*x(1)*x(2); ...
+        parameters('beta')*x(1)*k  parameters('beta')*x(2)*k   -fv-parameters('beta')*EaonR*k*x(1)*x(2)];
 end
 
