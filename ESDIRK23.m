@@ -17,7 +17,7 @@ function [X,T] = ESDIRK23(x0, f, jac, t0, t1, h0, abstol, reltol, parameters)
     ds = [(1-6*gamma^2)/(12*gamma); ...
         (6*gamma*(1-2*gamma)*(1-gamma)-1)/(12*gamma*(1-2*gamma)); ...
         (6*gamma*(1-gamma)-1)/(3*(1-2*gamma))];
-    
+    divcount = 0;
     t = t0;
     x = x0;
     X = x0;
@@ -42,6 +42,7 @@ function [X,T] = ESDIRK23(x0, f, jac, t0, t1, h0, abstol, reltol, parameters)
         Xs(:,1) = x;
         M = eye(size(J, 1))-h*gamma*J;
         [L, U, P] = lu(M);
+        divergent = true;
         
         for i=2:3
             psi = x+h*( fs(:,1:i-1) * bs(1:i-1));
@@ -49,14 +50,23 @@ function [X,T] = ESDIRK23(x0, f, jac, t0, t1, h0, abstol, reltol, parameters)
             Xs(:,i) = x + cs(i)*h*fs(:,1);
             divergent = true;
             while divergent
-                [Xres, fres, divergent] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, 100, 0.00000001, parameters);
+                [Xres, fres, divergent] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, 10, 0.00000001, parameters);
                 if divergent
-                    %TODO: CHANGE STEP SIZE AND REFACTORIZE ITERATION
-                    %MATRIX
+                    disp("Divergence or slow convergence! Refactorizing...");
+                    divcount = divcount + 1;
+                    h = h/2;
+                    break;
                 end
+            end
+            if divergent
+                break;
             end
             Xs(:,i) = Xres;
             fs(:,i) = fres;
+        end
+        
+        if divergent
+            continue;
         end
         
         e = h*fs*ds;
@@ -70,7 +80,7 @@ function [X,T] = ESDIRK23(x0, f, jac, t0, t1, h0, abstol, reltol, parameters)
             end
             x = Xs(:,3);
             t = Ts(3);
-            X = [X;x];
+            X = [X x];
             T = [T;t];
             n = n+1;
             rlast = r; hlast = tmp;
@@ -79,6 +89,8 @@ function [X,T] = ESDIRK23(x0, f, jac, t0, t1, h0, abstol, reltol, parameters)
         end
     end
     X = X';
-    T = T'
+    T = T';
+    disp("divcount")
+    disp(divcount)
 end
 
