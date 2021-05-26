@@ -47,7 +47,14 @@ function [x,t] = ESDIRK23(x0, f, jac, t0, t1, h0, parameters)
             psi = x+h*( fs(:,1:i-1) * bs(1:i-1));
             Ts(i) = t + cs(i)*h;
             Xs(:,i) = x + cs(i)*h*fs(:,1);
-            [Xres, fres] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, 100, 0.00000001, parameters);
+            divergent = true;
+            while divergent
+                [Xres, fres, divergent] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, 100, 0.00000001, parameters);
+                if divergent
+                    %TODO: CHANGE STEP SIZE AND REFACTORIZE ITERATION
+                    %MATRIX
+                end
+            end
             Xs(:,i) = Xres;
             fs(:,i) = fres;
         end
@@ -68,8 +75,6 @@ function [x,t] = ESDIRK23(x0, f, jac, t0, t1, h0, parameters)
         else
             h = (epsilon/r)^(1/3)*h;
         end
-        
-        %TODO: OPTIMIZATIONS
     end
 end
 
