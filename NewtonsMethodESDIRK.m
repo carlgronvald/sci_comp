@@ -4,12 +4,13 @@ function [Xres, fres, divergent] = NewtonsMethodESDIRK(X, T, f, h, gamma, psi, L
     R = ones(size(X,1), 1);
     iter = 0;
     Rlast = R;
-    divergent = false
+    divergent = false;
+    Xres = X;
     while max(abs(R)) > epsilon
         fres = f(T, X, parameters);
         Rlast = R;
         R = X - h*gamma*fres-psi;
-        alpha=  max(abs(Rlast))/max(abs(R));
+        alpha=  max(abs(R))/max(abs(Rlast));
         if alpha>1
             divergent = true;
             return; 

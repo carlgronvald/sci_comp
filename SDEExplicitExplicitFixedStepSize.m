@@ -10,8 +10,8 @@ X(:,1) = x0;
 T(1) = t0;
 for k=1:steps
     dW = W(:,k+1)-W(:,k);
-    dxdt = f(intervals(k), X(:,k), params);
-    dxdw = g(intervals(k), X(:,k), params);
+    dxdt = f(T(k), X(:,k), params);
+    dxdw = g(T(k), X(:,k), params);
     X(:,k+1) = X(:,k) + dxdt*h + dxdw*dW;
     T(k+1) = T(k)+h;
 end
