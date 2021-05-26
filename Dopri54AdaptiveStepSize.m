@@ -20,7 +20,7 @@ X = x;
 T = t;
 variable_count = size(x,2);
 
-KuttaConstants = zeros(variable_count,7);
+KuttaNumbers = zeros(variable_count,7);
 KuttaTimes = zeros(1,7);
 %eigth row is best estimate; ninth row is error estimate
 Butcher = [0 1/5 3/10 4/5 8/9 1 1 0 0; ... 
@@ -39,20 +39,19 @@ while t < t1
     end
    
     AcceptStep = false;
-    KuttaConstants(:,1) = x;
+    KuttaNumbers(:,1) = x;
     while ~AcceptStep
-        disp(t)
 
         %disp("Not accepting step");
         hButcher = Butcher*h;
         
         KuttaTimes = t + hButcher(1:7, 1);
         for s = 2:7
-            KuttaConstants(:,s) = x + hButcher(s, 2:s) * f(KuttaTimes(1:s-1),KuttaConstants(1,1:s-1),params)';
+            KuttaNumbers(:,s) = x + hButcher(s, 2:s) * f(KuttaTimes(1:s-1),KuttaNumbers(1,1:s-1),params)';
         end
         
-    	e = hButcher(9,2:8) * f(KuttaTimes, KuttaConstants, params)';
-        xhat = x + hButcher(8,2:8) * f(KuttaTimes, KuttaConstants, params)';
+    	e = hButcher(9,2:8) * f(KuttaTimes, KuttaNumbers, params)';
+        xhat = x + hButcher(8,2:8) * f(KuttaTimes, KuttaNumbers, params)';
         r = max(abs(e)./max(abstol, xhat.*reltol));
         
         AcceptStep = (r <= 1.0);

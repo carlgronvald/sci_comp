@@ -1,4 +1,4 @@
-function [X, T] = ImplicitEulerFixedStepSize(x0, fJac, steps, t0, t1, newtonTolerance, maxiterations, params)
+function [X, T] = ImplicitEulerFixedStepSize(x0, f, jac, steps, t0, t1, newtonTolerance, maxiterations, params)
 h = (t1-t0)/steps;
 
 variable_count = size(x0);
@@ -11,10 +11,10 @@ T(1) = t0;
 
 
 for i = 1:steps
-    xdot = fJac(T(i), X(:,i), params);
+    xdot = f(T(i), X(:,i), params);
     T(i+1) = T(i)+h;
     xguess = X(:,i)+xdot*h;
-    [X(:,i+1), ~] = NewtonsMethod(fJac,  T(:,i), X(:,i), h, xguess, newtonTolerance, maxiterations, params);
+    [X(:,i+1), ~] = NewtonsMethod(f, jac,  T(:,i), X(:,i), h, xguess, newtonTolerance, maxiterations, params);
 end
 
 T = T';

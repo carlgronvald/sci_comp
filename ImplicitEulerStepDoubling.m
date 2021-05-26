@@ -1,4 +1,4 @@
-function [X, T] = ImplicitEulerStepDoubling(x0, fJac, h0, t0, t1, newtonTolerance, newtonMaxiterations, abstol, reltol, params)
+function [X, T] = ImplicitEulerStepDoubling(x0, f, jac, h0, t0, t1, newtonTolerance, newtonMaxiterations, abstol, reltol, params)
 
 epstol = 0.8; %epstol = what part of the maximal step we'll take next time TODO: BETTER DESCRIPTION
 facmin = 0.1; %facmin = the smallest factor we'll allow multiplying h with in each step
@@ -17,19 +17,19 @@ while t < t1
         h = t1-t;
     end
     
-    xdot = fJac(t, x, params);
+    xdot = f(t, x, params);
     AcceptStep = false;
     
     
     while ~AcceptStep %Keep trying until we find a step with sufficiently small error.
         xguess = x+xdot*h;
-        [x1, ~] =  NewtonsMethod(fJac,  t, x, h, xguess, newtonTolerance, newtonMaxiterations, params);
+        [x1, ~] =  NewtonsMethod(f, jac,  t, x, h, xguess, newtonTolerance, newtonMaxiterations, params);
         
         hhalf = 0.5*h;
         thalfstep = t + hhalf;
-        [xhalfstep, ~] = NewtonsMethod(fJac, t, x, hhalf, x + xdot*hhalf, newtonTolerance, newtonMaxiterations, params);
-        xdothalfstep = fJac(thalfstep, xhalfstep, params);
-        [x1doublestep, ~] = NewtonsMethod(fJac, t, xhalfstep, hhalf, xhalfstep + xdothalfstep*hhalf, newtonTolerance, newtonMaxiterations, params);
+        [xhalfstep, ~] = NewtonsMethod(f, jac, t, x, hhalf, x + xdot*hhalf, newtonTolerance, newtonMaxiterations, params);
+        xdothalfstep = f(thalfstep, xhalfstep, params);
+        [x1doublestep, ~] = NewtonsMethod(f, jac, t, xhalfstep, hhalf, xhalfstep + xdothalfstep*hhalf, newtonTolerance, newtonMaxiterations, params);
         %TODO: CAN I USE THE dxdt FROM NEWTON'S METHOD??
         
         % Actual error
