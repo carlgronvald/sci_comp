@@ -1,4 +1,4 @@
-function [jac] = CSTRjac(x, parameters)
+function [jac] = CSTRjac(~, x, parameters)
 %CSTR The adiabatic continuous stirred tank reactor problem from the
 %supplied paper
 %x(1) = CA
@@ -10,11 +10,11 @@ function [jac] = CSTRjac(x, parameters)
 
 fv = parameters('F')/parameters('V');
 k0 = parameters('k0');
-EaonR = parameters('Ea');
+EaonR = parameters('EaonR');
 
 k = k0*exp(-EaonR/x(3));
-jac = [ -fv +x(2)*k x(1)*k  -EaonR*k*x(1)*x(2); ...
-        x(2)*k  -fv+x(1)*k -EaonR*k*x(1)*x(2); ...
-        parameters('beta')*x(1)*k  parameters('beta')*x(2)*k   -fv-parameters('beta')*EaonR*k*x(1)*x(2)];
+jac = [ -fv+x(2)*k, x(1)*k , -EaonR*k*x(1)*x(2); ...
+        x(2)*k, -fv+x(1)*k , -EaonR*k*x(1)*x(2); ...
+        parameters('beta')*x(1)*k, parameters('beta')*x(2)*k, -fv-parameters('beta')*EaonR*k*x(1)*x(2)];
 end
 

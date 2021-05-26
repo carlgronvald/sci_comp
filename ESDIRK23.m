@@ -30,7 +30,7 @@ function [X,T] = ESDIRK23(x0, f, jac, t0, t1, h0, abstol, reltol, parameters)
     fs = zeros(size(x0,1), 3);
     
 
-    fs(:,3) = f(t, x);
+    fs(:,3) = f(t, x, parameters);
     n = 1;
     while t < t1
         if t+h > t1
@@ -50,9 +50,10 @@ function [X,T] = ESDIRK23(x0, f, jac, t0, t1, h0, abstol, reltol, parameters)
             Xs(:,i) = x + cs(i)*h*fs(:,1);
             divergent = true;
             while divergent
-                [Xres, fres, divergent] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, 10, 0.00000001, parameters);
+                [Xres, fres, divergent] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, 20, 0.00000001, parameters);
                 if divergent
                     disp("Divergence or slow convergence! Refactorizing...");
+                    disp(["H=", h, ", t=", t])
                     divcount = divcount + 1;
                     h = h/2;
                     break;

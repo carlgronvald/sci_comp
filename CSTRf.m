@@ -1,4 +1,4 @@
-function [dx] = CSTRf(x, parameters)
+function [dx] = CSTRf(t, x, parameters)
 %CSTR The adiabatic continuous stirred tank reactor problem from the
 %supplied paper
 %x(1) = CA
@@ -11,7 +11,7 @@ function [dx] = CSTRf(x, parameters)
 
 fv = parameters('F')/parameters('V');
 k0 = parameters('k0');
-EaonR = parameters('Ea');
+EaonR = parameters('EaonR');
 
 k = k0*exp(-EaonR/x(3));
 r = x(1)*x(2)*k;
