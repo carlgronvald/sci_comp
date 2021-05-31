@@ -1,0 +1,43 @@
+%% Global and Local error, Explicit & Implicit Euler
+
+local_errors = zeros(2,100);
+
+for i=1:100
+    h =1.0/i;
+    [X1,~] = ExplicitEulerFixedStepSize([1.0], @testf, i, 0, 1, 0);
+    [X2,T] = ImplicitEulerFixedStepSize([1.0], @testf, @testjac, i, 0, 1, 0);
+    d1 = diff(X1);
+    d2 = diff(X2);
+    dreal = diff(exp(T));
+    local_exp = max(abs(d1-dreal));
+    local_imp = max(abs(d2-dreal));
+    local_errors(1,i) = local_exp;
+    local_errors(2, i) = local_imp;
+    global_errors(1,i) = X1(
+end
+
+plot(1./(1:100), local_errors(1:2,:));
+legend(["Explicit", "Implicit"])
+%plot(1./(1:100), local_errors(2,:));
+
+
+
+%[X, T] = ExplicitEulerStepDoubling([1. 1.], @testf, 0.1, 0, 1, [0.01 0.01], [0.01 0.01], 0)
+%[X,T] = ImplicitEulerFixedStepSize([1.], @testf, @testjac, 20, 0, 1, 1.0e-8, 100, 0)
+%[X,T] = ImplicitEulerStepDoubling([1.], @testf, @testjac, 0.01, 0, 1, 1.0e-8, 100, [0.001], [0.001], 0)
+%[X, T] = RK4FixedStepSize([1.], @testf, 20, 0, 1, 0)
+%[X, T] = RK4StepDoubling([1.], @testf, 0, 1, 0.1, 0.0001, 0.0001, 0);
+%[X,T] = Dopri54AdaptiveStepSize([1.], @testf, 0.1, 0, 2, [0.00001], [0.00001], 0)
+%[X,T] = ESDIRK23([1.], @testf, @testjac, 0, 1, 0.1, 0.001, 0.001, [])
+
+
+%W = Wiener(0, 1, 1000, 2, 1, 0)
+%Wsmall = zeros(2,100);
+%for i=1:100
+%    Wsmall(:,i) = W(:,i*10);
+%end
+
+%THIS SHOULD BE DONE IN A SMARTER WAY
+%[X1, T] = SDEExplicitExplicitFixedStepSize(@testf, @testg, 1, 0, 1000, [1,2], W, 0);
+%[X2, T] = SDEExplicitExplicitFixedStepSize(@testf, @testg, 1, 0, 99, [1,2], Wsmall, 0);
+%Err = (X1(1:10:1000,:)-X2)

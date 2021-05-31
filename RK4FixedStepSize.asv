@@ -1,11 +1,9 @@
 function [X, T] = RK4FixedStepSize(x0, f, steps, t0, t1, params)
-if size(x0,2) > 1
-    error("x0 should be pased as column vector!")
-end
-
 h = (t1-t0)/steps;
+variable_count = size(x0);
+variable_count = variable_count(2);
 
-X = zeros(length(x0), steps+1);
+X = zeros(variable_count, steps+1);
 X(:,1) = x0;
 T = zeros(1, steps+1);
 T(1) = t0;
@@ -21,13 +19,11 @@ for i = 1:steps
     KuttaConstants(:,1) = X(:,i);
     KuttaTimes = T(i) + hButcher(1:4, 1);
     for s = 2:4
-        KuttaConstants(:,s) = X(:,i) + hButcheras(s) * f(KuttaTimes(s-1), KuttaConstants(:, s-1), params);
+        KuttaConstants(:,s) = X(:,i) + hButcheras(s) * f(Ku
+        KuttaConstants(:,s) = X(:,i) + hButcher(s, 2:s) * f(KuttaTimes(1:s-1),KuttaConstants(1,1:s-1),params)';
     end
     
-    X(:,i+1) = X(:,i) +  hbutcherbs(1) * f(KuttaTimes(1), KuttaConstants(:,1), params) ...
-        + hbutcherbs(2) * f(KuttaTimes(2), KuttaConstants(:,1), params) ...
-        + hbutcherbs(3) * f(KuttaTimes(3), KuttaConstants(:,1), params) ...
-        + hbutcherbs(4) * f(KuttaTimes(4), KuttaConstants(:,1), params);
+    X(:,i+1) = X(:,i) +  hButcher(5,2:5) * f(KuttaTimes, KuttaConstants, params)';
     T(i+1) = T(i)+h;
 end
 X = X';

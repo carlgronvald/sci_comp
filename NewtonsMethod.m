@@ -8,7 +8,7 @@ xdot = f(t, x, params);
 J = jac(t,x,params);
 R = x - xdot*dt - Rterm;
 I = eye(length(Rterm));
-while i < maxiterations && max(abs(R)) > tolerance %Iteratively improve guess using newton's method.
+while (i < maxiterations) && (max(abs(R)) > tolerance) %Iteratively improve guess using newton's method.
     i = i+ 1;
     dRdx = I - J * dt;
     dx = dRdx\R;
@@ -16,5 +16,8 @@ while i < maxiterations && max(abs(R)) > tolerance %Iteratively improve guess us
     xdot = f(t, x, params);
     J = jac(t,x,params);
     R = x - dt*xdot - Rterm;
+    if i==maxiterations
+        disp("Not converging..")
+    end
 end
 

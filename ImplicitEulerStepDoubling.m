@@ -4,13 +4,12 @@ if size(x0,2) > 1
     error("x0 should be pased as column vector!")
 end
 
-newtonTolerance = 1.0e-8;
-newtonMaxiterations = 100;
->>>>>>> bad985ecbecffc9160aa666d9cb53bb81222b0f5
-
 epstol = 0.8; %epstol = what part of the maximal step we'll take next time TODO: BETTER DESCRIPTION
 facmin = 0.1; %facmin = the smallest factor we'll allow multiplying h with in each step
 facmax = 5.0; %facmax = the largest factor we'll allow multiplying h with in each step
+
+newtonTolerance = 1.0e-8;
+newtonMaxiterations = 100;
 
 variable_count = size(x0);
 variable_count = variable_count(2);

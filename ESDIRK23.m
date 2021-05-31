@@ -11,6 +11,9 @@ end
     max_iter = 100;
     num_variables = size(x0, 1);
     
+    
+    %TODO: epstol, facmin, facmax
+    
     bs = [ (1-gamma)/2; ...
         (1-gamma)/2; ...
         gamma];
