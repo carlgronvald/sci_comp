@@ -1,6 +1,10 @@
 function [X, T] = SDEExplicitExplicitFixedStepSize(f, g, t1, t0, steps, x0, W, params)
 %SDEEXPLICITEXPLICITFIXEDSTEPSIZE Summary of this function goes here
 %   Detailed explanation goes here
+if size(x0,2) > 1
+    error("x0 should be pased as column vector!")
+end
+
 h = (t1-t0)/steps;
 dimensions = length(x0);
 X = zeros(dimensions, steps);

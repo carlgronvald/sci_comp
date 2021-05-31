@@ -1,4 +1,12 @@
-function [X, T] = ImplicitEulerStepDoubling(x0, f, jac, h0, t0, t1, newtonTolerance, newtonMaxiterations, abstol, reltol, params)
+function [X, T] = ImplicitEulerStepDoubling(x0, f,jac, h0, t0, t1, abstol, reltol, params)
+
+if size(x0,2) > 1
+    error("x0 should be pased as column vector!")
+end
+
+newtonTolerance = 1.0e-8;
+newtonMaxiterations = 100;
+>>>>>>> bad985ecbecffc9160aa666d9cb53bb81222b0f5
 
 epstol = 0.8; %epstol = what part of the maximal step we'll take next time TODO: BETTER DESCRIPTION
 facmin = 0.1; %facmin = the smallest factor we'll allow multiplying h with in each step
@@ -45,8 +53,8 @@ while t < t1
             t = t+h;
             x = x1doublestep; %use the better estimate of the true value
             
-            T = [T;t];
-            X = [X;x];
+            T = [T,t];
+            X = [X,x];
         end
         
         % Calculate sqrt(epstol/r) - this is the 'largest step' (because of

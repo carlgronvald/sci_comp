@@ -1,9 +1,11 @@
 function [X, T] = RK4FixedStepSize(x0, f, steps, t0, t1, params)
-h = (t1-t0)/steps;
-variable_count = size(x0);
-variable_count = variable_count(2);
+if size(x0,2) > 1
+    error("x0 should be pased as column vector!")
+end
 
-X = zeros(variable_count, steps+1);
+h = (t1-t0)/steps;
+
+X = zeros(length(x0), steps+1);
 X(:,1) = x0;
 T = zeros(1, steps+1);
 T(1) = t0;

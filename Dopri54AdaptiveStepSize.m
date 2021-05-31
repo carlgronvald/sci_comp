@@ -1,7 +1,9 @@
 function [X,T] = Dopri54AdaptiveStepSize(x0, f, h0, t0, t1, abstol, reltol, params)
 %DOPRI54 Summary of this function goes here
 %   Detailed explanation goes here
-
+if size(x0,2) > 1
+    error("x0 should be pased as column vector!")
+end
 
 %Constants for asymptotic error control
 epstol = 0.8;
@@ -18,9 +20,8 @@ t = t0;
 x = x0;
 X = x;
 T = t;
-variable_count = size(x,2);
 
-KuttaNumbers = zeros(variable_count,7);
+KuttaConstants = zeros(length(x0),7);
 KuttaTimes = zeros(1,7);
 %eigth row is best estimate; ninth row is error estimate
 Butcher = [0 1/5 3/10 4/5 8/9 1 1 0 0; ... 
@@ -44,6 +45,16 @@ while t < t1
 
         %disp("Not accepting step");
         hButcher = Butcher*h;
+        
+        
+       % KuttaConstants(:,1) = X(:,i);
+        %KuttaTimes = T(i) + hButcher(1:4, 1);
+        %for s = 2:4
+        %    KuttaConstants(:,s) = X(:,i) + hButcher(s, 2:s) * f(KuttaTimes(1:s-1),KuttaConstants(1,1:s-1),params)';
+        %end
+
+        %X(:,i+1) = X(:,i) +  hButcher(5,2:5) * f(KuttaTimes, KuttaConstants, params)';
+        %T(i+1) = T(i)+h;
         
         KuttaTimes = t + hButcher(1:7, 1);
         for s = 2:7

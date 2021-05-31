@@ -2,6 +2,11 @@ function [X,T] = SDEImplicitExplicitFixedStepSize(f, jac, g, t1, t0, steps, x0, 
 %SDEEXPLICITIMPLICITFIXEDSTEPSIZE Summary of this function goes here
 %   Detailed explanation goes here
 %TODO: TOLERANCE AND MAXIT AS PARAMETERS
+
+if size(x0,2) > 1
+    error("x0 should be pased as column vector!")
+end
+
 tol = 1.0e-8;
 maxit = 100;
 
