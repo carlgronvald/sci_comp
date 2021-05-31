@@ -59,8 +59,6 @@ end
             while divergent
                 [Xres, fres, divergent] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, 50, 0.00000001, parameters);
                 if divergent
-                    %disp("Divergence or slow convergence! Refactorizing...");
-                    %disp(["h=", h, ", t=", t])
                     divcount = divcount + 1;
                     h = h/2;
                     break;
@@ -92,7 +90,6 @@ end
             T = [T;t];
             n = n+1;
             rlast = r; hlast = tmp;
-            disp(t)
         else
             h = (epsilon/r)^(1/3)*h;
         end

@@ -79,8 +79,8 @@ while t < t1
         if AcceptStep % use PI controller
             x = xhat;
             t = t+h;
-            X = [X;x];
-            T = [T;t];
+            X = [X,x];
+            T = [T,t];
             h = max(  min((epstol/r)^kI * (rold/r)^kP, facmax), facmin  )*h;
             rold = r;
         else
@@ -90,3 +90,5 @@ while t < t1
     
 end
 
+X = X';
+T = T';
