@@ -1,4 +1,4 @@
-function [X,T] = ESDIRK23(x0, f, jac, t0, t1, h0, abstol, reltol, parameters)
+function [X,T] = ESDIRK23(x0, f, jac, h0, t0,t1, abstol, reltol, parameters)
 %ESDIRK23 Does some partially implicit partially explicit stuff I think
 %jac = function that evaluates dx, jacobian
 %

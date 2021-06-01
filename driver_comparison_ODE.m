@@ -2,15 +2,15 @@
 %% Van der Pol
 parameters = CreateParams('mu', 1.5);
 x0 = [1.0;1.0];
-[X1,T1] = ExplicitEulerFixedStepSize(x0, @vanderpolf, 100, 0, 10, parameters);
+[X1,T1] = ExplicitEulerFixedStepSize(x0, @vanderpolf, 0.1, 0, 10, parameters);
 [X2,T2] = ExplicitEulerStepDoubling(x0, @vanderpolf, 0.1, 0, 10, 0.01, 0.01, parameters);
-[X3,T3] = ImplicitEulerFixedStepSize(x0, @vanderpolf, @vanderpoljac, 100, 0, 10, parameters);
+[X3,T3] = ImplicitEulerFixedStepSize(x0, @vanderpolf, @vanderpoljac, 10.1, 0, 10, parameters);
 [X4,T4] = ImplicitEulerStepDoubling(x0, @vanderpolf, @vanderpoljac, 0.1, 0, 10, 0.01, 0.01, parameters);
-[X5,T5] = RK4FixedStepSize(x0, @vanderpolf, 100, 0, 10, parameters);
+[X5,T5] = RK4FixedStepSize(x0, @vanderpolf, 0.1, 0, 10, parameters);
 [X6,T6] = RK4StepDoubling(x0, @vanderpolf, 0, 10, 0.1, 0.01, 0.01, parameters);
 [X7,T7] = Dopri54AdaptiveStepSize(x0, @vanderpolf, 0.1, 0, 10, 0.01, 0.01, parameters);
 [X8,T8] = ESDIRK23(x0, @vanderpolf, @vanderpoljac, 0, 10, 0.1, 0.01, 0.01, parameters);
-[Xcorrect,Tcorrect] = ESDIRK23(x0,@vanderpolf,@vanderpoljac,0,10,0.01,1e-7,1e-7,parameters);
+[Xcorrect,Tcorrect] = ESDIRK23(x0,@vanderpolf,@vanderpoljac,0.01, 0,10,1e-7,1e-7,parameters);
 
 
 gl1 = find_global_error(X1,T1,Xcorrect,Tcorrect);

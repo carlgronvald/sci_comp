@@ -1,10 +1,9 @@
-function [X, T] = RK4FixedStepSize(x0, f, steps, t0, t1, params)
+function [X, T] = RK4FixedStepSize(x0, f, h, t0, t1, params)
 if size(x0,2) > 1
     error("x0 should be pased as column vector!")
 end
 
-h = (t1-t0)/steps;
-
+steps = ceil((t1-t0)/h);
 X = zeros(length(x0), steps+1);
 X(:,1) = x0;
 T = zeros(1, steps+1);
@@ -18,6 +17,9 @@ hButcheras = h*[0 1/2 1/2 1];
 hButcher = h*[0 1/2 1/2 1 0; 0 1/2 0 0 1/6; 0 0 1/2 0 1/3; 0 0 0 1 1/3; 0 0 0 0 1/6]';
 
 for i = 1:steps
+    if T(i)+h > t1
+        h = t1-T(i);
+    end
     KuttaConstants(:,1) = X(:,i);
     KuttaTimes = T(i) + hButcher(1:4, 1);
     for s = 2:4
