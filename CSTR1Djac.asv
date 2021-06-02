@@ -1,0 +1,20 @@
+function [J] = CSTR1Djac(t, x, p)
+%CSTR1DF Summary of this function goes here
+%   Detailed explanation goes here
+Tdiff = (p('Tin')-x);
+CA = p('CAin') + 1/p('beta') * Tdiff;
+CB = p('CBin') + 2/p('beta') * Tdiff;
+k = p('k0')*exp(-p('EaonR')/x);
+dx = p('F')/p('V')*Tdiff + p('beta')*k*CA*CB;
+F = p('F')
+V = p('V')
+beta = p('beta')
+k0 = p('k0')
+EaonR = p('EaonR')
+CAin = p('CAin')
+CBin = p('CBin')
+Tin = p('Tin
+
+-F/V + beta*k0*EaonR*exp(-EaonR/T)*(CAin + (Tin - T)/beta)*(CBin + 2*(Tin - T)/beta)/T^2 - k0*exp(-EaonR/T)*(CBin + 2*(Tin - T)/beta) - 2*k0*exp(-EaonR/T)*(CAin + (Tin - T)/beta)
+end
+

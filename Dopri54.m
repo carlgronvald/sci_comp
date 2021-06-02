@@ -1,4 +1,4 @@
-function [X,T] = Dopri54AdaptiveStepSize(x0, f, h0, t0, t1, abstol, reltol, params)
+function [X,T] = Dopri54(x0, f, h0, t0, t1, abstol, reltol, params)
 %DOPRI54 Summary of this function goes here
 %   Detailed explanation goes here
 if size(x0,2) > 1

@@ -1,4 +1,4 @@
-function [X, T] = RK4StepDoubling(x0, f, t0, t1, h0, abstol, reltol, params)
+function [X, T] = RK4StepDoubling(x0, f, h0, t0, t1, abstol, reltol, params)
 if size(x0,2) > 1
     error("x0 should be pased as column vector!")
 end
