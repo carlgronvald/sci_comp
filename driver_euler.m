@@ -5,7 +5,7 @@
 %5 == Van der Pol implicit Euler
 %6 == CSTR3D implicit Euler
 %7 == CSTR1D implicit euler
-mode = 6;
+mode = 5;
 
 %% Predator-Prey and Stability
 if mode == 1
@@ -54,8 +54,8 @@ figure
 parameters = CreateParams('mu', 12);
 x0 = [1.0;1.0];
 vanmu1p5 = @(t,x) vanderpolf(t,x,parameters);
-[X1,T1] = ExplicitEulerFixedStepSize(x0, @vanderpolf, 0.05, 0, 40, parameters);
-[X2,T2] = ExplicitEulerStepDoubling(x0, @vanderpolf, 0.1, 0, 40, 0.1, 0.1, parameters);
+[X1,T1] = ExplicitEulerFixedStepSize(x0, @vanderpolf, 0.01, 0, 40, parameters);
+[X2,T2] = ExplicitEulerStepDoubling(x0, @vanderpolf, 0.2, 0, 40, 0.1, 0.1, parameters);
 [Tcorrect, Xcorrect] = ode15s(vanmu1p5, [0 40], [1.0;1.0]);
 hold off
 plot(T1, X1(:,1))
@@ -74,7 +74,7 @@ parameters = CSTRparameters();
 x0 = CSTRx0(parameters);
 parmcstr = @(t,x) CSTRf(t,x,parameters);
 [X1,T1] = ExplicitEulerFixedStepSize(x0, @CSTRf, 10, 0, 200, parameters);
-[X2,T2] = ExplicitEulerStepDoubling(x0, @CSTRf, 0.1, 0, 200, 0.01, 0.01, parameters);
+[X2,T2] = ExplicitEulerStepDoubling(x0, @CSTRf, 1, 0, 200, 0.01, 0.01, parameters);
 [Tcorrect, Xcorrect] = ode15s(parmcstr, [0 200], x0);
 
 hold off
@@ -95,7 +95,7 @@ parameters = CSTRparameters();
 x0 = 273.15;
 parmcstr = @(t,x) CSTR1Df(t,x,parameters);
 [X1,T1] = ExplicitEulerFixedStepSize(x0, @CSTR1Df, 10, 0, 200, parameters);
-[X2,T2] = ExplicitEulerStepDoubling(x0, @CSTR1Df, 0.1, 0, 200, 0.01, 0.01, parameters);
+[X2,T2] = ExplicitEulerStepDoubling(x0, @CSTR1Df, 1, 0, 200, 0.01, 0.01, parameters);
 [Tcorrect, Xcorrect] = ode15s(parmcstr, [0 200], x0);
 
 hold off
@@ -133,7 +133,7 @@ parameters = CreateParams('mu', 12.0);
 x0 = [1.0;1.0];
 vanmu1p5 = @(t,x) vanderpolf(t,x,parameters);
 [X1,T1] = ImplicitEulerFixedStepSize(x0, @vanderpolf, @vanderpoljac, 0.05, 0, 40, parameters);
-[X2,T2] = ImplicitEulerStepDoubling(x0, @vanderpolf, @vanderpoljac, 0.01, 0, 40, 0.005, 0.005, parameters);
+[X2,T2] = ImplicitEulerStepDoubling(x0, @vanderpolf, @vanderpoljac, 0.2, 0, 40, 0.005, 0.005, parameters);
 [Tcorrect, Xcorrect] = ode15s(vanmu1p5, [0 40], [1.0;1.0]);
 hold off
 plot(T1, X1(:,1))
@@ -152,8 +152,8 @@ if mode==6
 parameters = CSTRparameters();
 x0 = CSTRx0(parameters);
 parmcstr = @(t,x) CSTRf(t,x,parameters);
-[X1,T1] = ImplicitEulerFixedStepSize(x0, @CSTRf, @CSTRjac, 1, 0, 200, parameters);
-[X2,T2] = ImplicitEulerStepDoubling(x0, @CSTRf, @CSTRjac, 0.1, 0, 200, 0.001, 0.01, parameters);
+[X1,T1] = ImplicitEulerFixedStepSize(x0, @CSTRf, @CSTRjac, 10, 0, 200, parameters);
+[X2,T2] = ImplicitEulerStepDoubling(x0, @CSTRf, @CSTRjac, 1, 0, 200, 0.01, 0.01, parameters);
 [Tcorrect, Xcorrect] = ode15s(parmcstr, [0 200], x0);
 
 hold off
@@ -174,7 +174,7 @@ parameters = CSTRparameters();
 x0 = 273.15;
 parmcstr = @(t,x) CSTR1Df(t,x,parameters);
 [X1,T1] = ImplicitEulerFixedStepSize(x0, @CSTR1Df, @CSTR1Djac, 10, 0, 200, parameters);
-[X2,T2] = ImplicitEulerStepDoubling(x0, @CSTR1Df, @CSTR1Djac, 0.1, 0, 200, 0.01, 0.01, parameters);
+[X2,T2] = ImplicitEulerStepDoubling(x0, @CSTR1Df, @CSTR1Djac, 1, 0, 200, 0.01, 0.01, parameters);
 [Tcorrect, Xcorrect] = ode15s(parmcstr, [0 200], x0);
 
 hold off

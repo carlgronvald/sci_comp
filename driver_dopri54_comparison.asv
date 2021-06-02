@@ -59,33 +59,24 @@ legend("DOPRI54", "ode45", "ode15s")
 end
 %% Adiabatic CSTR 3D
 if mode == 2
-    
-    
-%Again, we compare the number of function evaluations of DOPRI54 and ode45
 parameters = CSTRparameters();
 x0 = CSTRx0(parameters);
-parmcstr = @(t,x) c3counter(t,x,parameters);
+parmcstr = @(t,x) CSTRf(t,x,parameters);
 global counter;
 counter = 0;
-[X1,T1] = Dopri54(x0, @c3counter, 0.01, 0, 200, 0.01, 0.01, parameters);
-disp(counter);
-counter=0;
-options = odeset('RelTol', 0.01, 'AbsTol', 0.01);
-[T2,X2] = ode45(parmcstr, [0 200], x0, options);
-disp(counter)
+[X1,T1] = Dopri54(x0, @CSTRf, 10, 0, 200, 0.01, 0.01, parameters);
 [Tcorrect, Xcorrect] = ode15s(parmcstr, [0 200], x0);
 
 hold off
 plot(T1, X1(:,3))
 hold on
-plot(T2, X2(:,3))
 plot(Tcorrect, Xcorrect(:,3))
 xlabel("t [s]")
 ylabel("T [K]")
 title("3D CSTR, temperature, DOPRI54")
 xlabel("t [s]")
 ylabel("T [K]")
-legend("DOPRI54", "ode45", "ode15s")
+legend("DOPRI54", "ode15s")
 
 end
 %% Adiabatic CSTR 1D
@@ -94,28 +85,22 @@ parameters = CSTRparameters();
 x0 = 273.15;
 
 % Again, we count the number of function evaluations
-% We compare to ode15s and ode45
 global counter;
 counter = 0;
-parmcstr = @(t,x) c1counter(t,x,parameters);
-[X1,T1] = Dopri54(x0, @c1counter, 0.01, 0, 200, 0.01, 0.01, parameters);
-disp(counter)
-counter = 0;
-options = odeset('RelTol', 0.01, 'AbsTol', 0.01);
-[T2,X2] = ode45(parmcstr, [0 200], x0, options);
-disp(counter)
+parmcstr = @(t,x) CSTR1Df(t,x,parameters);
+[X1,T1] = Dopri54(x0, @CSTR1Df, 10, 0, 200, 0.01, 0.01, parameters);
 [Tcorrect, Xcorrect] = ode15s(parmcstr, [0 200], x0);
-
 
 hold off
 plot(T1, X1)
 hold on
-plot(T2, X2)
 plot(Tcorrect, Xcorrect)
 xlabel("t [s]")
 ylabel("T [K]")
 title("1D CSTR, temperature, DOPRI54")
-legend("DOPRI54", "ode45", "ode15s")
+xlabel("t [s]")
+ylabel("T [K]")
+legend("DOPRI54", "ode15s")
 end
 
 
@@ -128,11 +113,5 @@ end
 function dx = c1counter(t,x,p)
     global counter;
     dx = CSTR1Df(t,x,p);
-    counter = counter+1;
-end
-
-function dx = c3counter(t,x,p)
-    global counter;
-    dx = CSTRf(t,x,p);
     counter = counter+1;
 end

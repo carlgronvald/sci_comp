@@ -57,19 +57,22 @@ while t < t1
         %T(i+1) = T(i)+h;
         
         KuttaTimes = t + hButcher(1:7, 1);
+        kuttafs = zeros(length(x0),7);
+        kuttafs(:,1) = f(KuttaTimes(1), KuttaNumbers(:,1), params);
         for s = 2:7
             KuttaNumbers(:,s) = x;
             for l = 1:s-1
-                KuttaNumbers(:,s) = KuttaNumbers(:,s) + hButcher(s, l+1) * f(KuttaTimes(l), KuttaNumbers(:, l), params);
+                KuttaNumbers(:,s) = KuttaNumbers(:,s) + hButcher(s, l+1) * kuttafs(:, l);
             end
+            kuttafs(:,s) = f(KuttaTimes(s), KuttaNumbers(:,s), params);
 %            + hButcher(s, 2:s) * f(KuttaTimes(1:s-1),KuttaNumbers(1,1:s-1),params)';
         end
         
         e = 0;
         xhat = x;
         for l = 1:7
-            e = e + hButcher(9, l+1) * f(KuttaTimes(l), KuttaNumbers(:,l), params);
-            xhat = xhat + hButcher(8, l+1) * f(KuttaTimes(l), KuttaNumbers(:,l), params);
+            e = e + hButcher(9, l+1) * kuttafs(:,   l);
+            xhat = xhat + hButcher(8, l+1) * kuttafs(:,l);
         end
 %    	e = hButcher(9,2:8) * f(KuttaTimes, KuttaNumbers, params)';
 %        xhat = x + hButcher(8,2:8) * f(KuttaTimes, KuttaNumbers, params)';

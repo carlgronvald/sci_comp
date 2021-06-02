@@ -3,14 +3,33 @@
 
 parameters = CreateParams('mu', 1.5);
 x0 = [1.0;1.0];
-[X1,T1] = ExplicitEulerFixedStepSize(x0, @vanderpolf, 0.0007, 0, 40, parameters);
-[X2,T2] = ExplicitEulerStepDoubling(x0, @vanderpolf, 0.1, 0, 40, 0.0000035, 0.000001, parameters);
-[X3,T3] = ImplicitEulerFixedStepSize(x0, @vanderpolf, @vanderpoljac, 0.0007, 0, 40, parameters);
-[X4,T4] = ImplicitEulerStepDoubling(x0, @vanderpolf, @vanderpoljac, 0.1, 0, 40, 0.000003, 0.000003, parameters);
-[X5,T5] = RK4FixedStepSize(x0, @vanderpolf, 0.24, 0, 40, parameters);
-[X6,T6] = RK4StepDoubling(x0, @vanderpolf, 0.1, 0, 40, 0.198, 0.198, parameters);
-[X7,T7] = Dopri54(x0, @vanderpolf, 0.1, 0, 40, 0.001001, 0.001001, parameters);
-[X8,T8] = ESDIRK23(x0, @vanderpolf, @vanderpoljac, 0.1, 0, 40, 0.000002, 0.000002, parameters);
+counts = zeros(8,1);
+global counter;
+counter = 0;
+[X1,T1] = ExplicitEulerFixedStepSize(x0, @vpcounter, 0.1, 0, 40, parameters);
+counts(1) = counter;
+counter = 0;
+[X2,T2] = ExplicitEulerStepDoubling(x0, @vpcounter, 0.1, 0, 40, 0.01, 0.01, parameters);
+counts(2) = counter;
+counter = 0;
+[X3,T3] = ImplicitEulerFixedStepSize(x0, @vpcounter, @vanderpoljac, 0.1, 0, 40, parameters);
+counts(3) = counter;
+counter = 0;
+[X4,T4] = ImplicitEulerStepDoubling(x0, @vpcounter, @vanderpoljac, 0.1, 0, 40, 0.01, 0.01, parameters);
+counts(4) = counter;
+counter = 0;
+[X5,T5] = RK4FixedStepSize(x0, @vpcounter, 0.1, 0, 40, parameters);
+counts(5) = counter;
+counter = 0;
+[X6,T6] = RK4StepDoubling(x0, @vpcounter, 0.1, 0, 40, 0.01, 0.01, parameters);
+counts(6) = counter;
+counter = 0;
+[X7,T7] = Dopri54(x0, @vpcounter, 0.1, 0, 40, 0.01, 0.01, parameters);
+counts(7) = counter;
+counter = 0;
+[X8,T8] = ESDIRK23(x0, @vpcounter, @vanderpoljac, 0.1, 0, 40, 0.01, 0.01, parameters);
+counts(8) = counter;
+counter = 0;
 options = odeset('RelTol', 1e-15, 'AbsTol', 1e-15);
 vanmu1p5 = @(t,x) vanderpolf(t,x,parameters);   
 [Tcorrect, Xcorrect] = ode15s(vanmu1p5, [0 40], [1.0;1.0], options);
@@ -116,4 +135,10 @@ for i=1:length(T)
     end
 end
 
+end
+
+function dx = vpcounter(t,x,p)
+    global counter;
+    dx = vanderpolf(t,x,p);
+    counter = counter+1;
 end
