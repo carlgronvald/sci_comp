@@ -18,17 +18,19 @@ T = zeros(1, steps+1);
 
 X(:,1) = x0;
 T(1) = t0;
-dxdt = f(T(0), X(:,0), params);
+dxdt = f(T(1), X(:,1), params);
 for k=1:steps
     if T(k)+h > t1
         h = t1-T(k);
     end
     dxdW = g(T(k), X(:,k), params);
     dW = W(:,k+1)-W(:,k);
-    psi = X(:,k) + dxdW*dW;
+    psi = X(:,k) + dxdW.*dW;
     xguess = psi + dxdt*h;
-    [X(:, k+1), dxdt] = NewtonsMethod(f, jac, T(:,k+1), h, psi, xguess, tol, maxit, params);
+    T(k+1) = T(k)+h;
+    [X(:, k+1), dxdt] = NewtonsMethod(f, jac, T(k), psi, h, xguess, tol, maxit, params);
 end
 
-
+T = T';
+X = X';
 

@@ -19,7 +19,7 @@ for k=1:steps
     dW = W(:,k+1)-W(:,k);
     dxdt = f(T(k), X(:,k), params);
     dxdw = g(T(k), X(:,k), params);
-    X(:,k+1) = X(:,k) + dxdt*h + dxdw*dW;
+    X(:,k+1) = X(:,k) + dxdt*h + dxdw.*dW;
     T(k+1) = T(k)+h;
 end
 X = X';
