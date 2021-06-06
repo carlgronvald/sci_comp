@@ -1,5 +1,5 @@
 function [dx] = CSTRf(t, x, parameters)
-%CSTR The adiabatic continuous stirred tank reactor problem from the
+%CSTR The 3D adiabatic continuous stirred tank reactor problem from the
 %supplied paper
 %x(1) = CA
 %x(2) = CB

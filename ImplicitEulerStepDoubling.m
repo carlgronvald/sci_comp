@@ -11,9 +11,6 @@ facmax = 5.0; %facmax = the largest factor we'll allow multiplying h with in eac
 newtonTolerance = 1.0e-8;
 newtonMaxiterations = 100;
 
-variable_count = size(x0);
-variable_count = variable_count(2);
-
 x = x0;
 t = t0;
 h = h0;
@@ -32,19 +29,19 @@ while t < t1
         xguess = x+xdot*h;
         [x1, ~] =  NewtonsMethod(f, jac,  t, x, h, xguess, newtonTolerance, newtonMaxiterations, params);
         
+        %Double step by solving the equations twice.
         hhalf = 0.5*h;
         thalfstep = t + hhalf;
         [xhalfstep, ~] = NewtonsMethod(f, jac, t, x, hhalf, x + xdot*hhalf, newtonTolerance, newtonMaxiterations, params);
         xdothalfstep = f(thalfstep, xhalfstep, params);
         [x1doublestep, ~] = NewtonsMethod(f, jac, t, xhalfstep, hhalf, xhalfstep + xdothalfstep*hhalf, newtonTolerance, newtonMaxiterations, params);
-        %TODO: CAN I USE THE dxdt FROM NEWTON'S METHOD??
         
         % Actual error
         e = x1doublestep-x1;
         % For each x variable, find the relation between either the
         % absolute tolerance or the relative tolerance times the estimated
-        % correct value (whichever is best?? WHY BEST TODO). Use the worst of those as r
-        % (kind of a how-bad-are-we but normalized estimate)
+        % correct value, whichever is the least horrible. A
+        % how-bad-are-we-but-normalized measure.
         r = max(abs(e)./max(abstol, x1doublestep.*reltol));
         
         AcceptStep = (r <= 1.0);
@@ -56,10 +53,8 @@ while t < t1
             X = [X,x];
         end
         
-        % Calculate sqrt(epstol/r) - this is the 'largest step' (because of
-        % 2nd order TODO). Then clamp between facmin and facmax, since we
-        % don't change h by anymore than those factors, and multiply h
-        % by them.
+        %Asymptotic error control for a first order method, clamp between
+        %facmin and facmax
         h = max(facmin, min( sqrt(epstol/r), facmax))*h;
     end
 end

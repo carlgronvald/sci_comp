@@ -1,9 +1,10 @@
 % 1 == Van der Pol SDE
 % 2 == CSTR 3D SDE
 % 3 == CSTR 1D SDE
-mode = 1;
+mode = 3;
 
-if mode == 1
+if mode == 1 %Test the SDE formulation of Van der Pol
+%Construct noise and run Van der Pol for mu=1.5
 W = Wiener(0, 40, 200, 2, 1, 1);
 p = CreateParams('mu', 1.5, 'sigma', 0.3);
 [X1, T1] = SDEExplicitExplicitFixedStepSize([1.0;1.0], @vanderpolf, @vanderpolg, 0.2, 0, 40, W, p);
@@ -19,6 +20,7 @@ legend("Explicit-Explicit", "Implicit-Explicit")
 title("Stochastic Van der Pol, mu=1.5, sigma=0.3")
 figure
 
+%Construct noise and run Van der Pol for mu=15
 W = Wiener(0, 40, 4000, 2, 1, 1);
 p = CreateParams('mu', 15, 'sigma', 1.5);
 [X1, T1] = SDEExplicitExplicitFixedStepSize([1.0;1.0], @vanderpolf, @vanderpolg, 0.01, 0, 40, W, p);
@@ -35,6 +37,7 @@ title("Stochastic Van der Pol, mu=15, sigma=1.5")
 end
 %% CSTR 3D
 if mode == 2
+%Construct noise and run CSTR3D
 W = Wiener(0, 200, 200, 3, 1, 1);
 p = CSTRparameters('sigma', 1.5);
 x0 = CSTRx0(p);
@@ -52,6 +55,7 @@ title("Stochastic 3D CSTR, sigma=1.5")
 end
 %% CSTR 1D
 if mode == 3
+%Construct noise and run CSTR1D
 W = Wiener(0, 200, 200, 1, 1, 1);
 p = CSTRparameters('sigma', 1.5);
 x0 = [273.15];

@@ -1,6 +1,5 @@
 function [J] = CSTR1Djac(t, x, p)
-%CSTR1DF Summary of this function goes here
-%   Detailed explanation goes here
+%CSTR1DF Returns the jacobian of the 1 dimensional CSTR problem.
 F = p('F');
 V = p('V');
 beta = p('beta');

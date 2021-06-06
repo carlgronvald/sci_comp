@@ -1,6 +1,6 @@
 function [params] = CreateParams(varargin)
-%CREATEPARAMS Summary of this function goes here
-%   Detailed explanation goes here
+%CREATEPARAMS Creates a map that can be used to pass parameters to a
+%differential equation function
 keys = [];
 values = [];
 for i=1:nargin

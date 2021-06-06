@@ -1,6 +1,5 @@
 function [dx] = testf(t, x, parameters)
-%TESTF Summary of this function goes here
-%   Detailed explanation goes here
+%TESTF ODE function for the ODE dx= lambda x
 dx = x*parameters;
 end
 

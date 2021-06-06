@@ -4,8 +4,10 @@
 % 4 == Extreme Van der Pol, mu=500
 % 5 == ESDIRK23 forward integrator stability
 mode = 4;
+
 %% Van der Pol
 if mode == 1
+%Test ESDIRK23 on Van der Pol with mu=1.5
 parameters = CreateParams('mu', 1.5);
 x0 = [1.0;1.0];
 vanmu1p5 = @(t,x) vanderpolf(t,x,parameters);
@@ -19,8 +21,9 @@ title("Van der Pol, mu=1.5, ESDIRK23")
 xlabel("t")
 ylabel("x(1)")
 legend("ESDIRK23 adaptive step", "ode15s")
-figure 
 
+%And test it on mu=15
+figure 
 parameters = CreateParams('mu', 15);
 x0 = [1.0;1.0];
 vanmu1p5 = @(t,x) vanderpolf(t,x,parameters);
@@ -37,6 +40,7 @@ legend("ESDIRK23", "ode15s")
 end
 %% Adiabatic CSTR 3D
 if mode == 2
+%Test ESDIRK23 on CSTR 3D
 parameters = CSTRparameters();
 x0 = CSTRx0(parameters);
 parmcstr = @(t,x) CSTRf(t,x,parameters);
@@ -57,6 +61,7 @@ legend("ESDIRK23", "ode15s")
 end
 %% Adiabatic CSTR 1D
 if mode == 3
+%Test ESDIRK23 on CSTR 1D
 parameters = CSTRparameters();
 x0 = 273.15;
 parmcstr = @(t,x) CSTR1Df(t,x,parameters);
@@ -76,6 +81,9 @@ legend("ESDIRK23", "ode15s")
 end
 %% Extreme Van der Pol
 if mode == 4
+%Test ESDIRK23 along with DOPRI54 and RK4 adaptive step on an extreme
+%version of the Van der Pol problem, so we can see what is gained by a
+%stiffly accurate integrator like ESDIRK23.
 parameters = CreateParams('mu', 500);
 x0 = [1.0;1.0];
 vanmu1p5 = @(t,x) vpcounter(t,x,parameters);
@@ -124,6 +132,7 @@ end
 
 %% Esdirk Stability
 if mode == 5
+%Draw the stability region of ESDIRK23 forward integrator
 x = -10:0.01:15;
 y = -10:0.01:10;
 g = (2 - sqrt(2))/2;
@@ -135,16 +144,15 @@ for n=1:length(x)
         value(k,n) = v(x(n),y(k));
     end
 end
-d = 255/5;
 value(value>1) = 1;
-image([-10,15], [-10,10], value, 'CDataMapping', 'scaled')
+image([x(1),x(end)], [y(1),y(end)], value, 'CDataMapping', 'scaled')
 colorbar
 title("|R(z)|, ESDIRK23 Forward Integrator")
 xlabel("Re(z)")
 ylabel("Im(z)")
 end
 
-
+%Counter functions to count function calls.
 function dx = vpcounter(t,x,p)
     global counter;
     dx= vanderpolf(t,x,p);

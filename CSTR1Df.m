@@ -1,6 +1,6 @@
 function [dx] = CSTR1Df(t, x, p)
-%CSTR1DF Summary of this function goes here
-%   Detailed explanation goes here
+%CSTR1DF Returns the derivative of the temperature in the one dimensional
+%CSTR problem
 F = p('F');
 V = p('V');
 beta = p('beta');

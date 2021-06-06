@@ -1,6 +1,5 @@
 function [J] = predpreyjac(t, x, params)
-%PREDPREYF Summary of this function goes here
-%   Detailed explanation goes here
+%PREDPREYF Jacobian for the predator-prey problem.
 J = zeros(2,2);
 J(1,1) = params('a')*(1-x(2));
 J(1,2) = -params('a')*x(1);

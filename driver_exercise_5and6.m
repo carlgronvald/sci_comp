@@ -3,9 +3,13 @@
 % 3 == CSTR 1D RK4
 % 4 == Order RK4
 % 5 == RK4 Stability
-mode = 1;
+mode = 5;
+
 %% Van der Pol
 if mode == 1
+%Use RK4 both with step doubling and fixed step size on the Van der Pol
+%problem, and compare to ode15s
+%First, mu=1.5
 parameters = CreateParams('mu', 1.5);
 x0 = [1.0;1.0];
 vanmu1p5 = @(t,x) vanderpolf(t,x,parameters);
@@ -21,8 +25,9 @@ title("Van der Pol, mu=1.5, Classical Runge Kutta")
 xlabel("t")
 ylabel("x(1)")
 legend("fixed step", "adaptive step", "ode15s")
-figure 
 
+%Then, mu=15
+figure 
 parameters = CreateParams('mu', 15);
 x0 = [1.0;1.0];
 vanmu1p5 = @(t,x) vanderpolf(t,x,parameters);
@@ -41,6 +46,7 @@ legend("fixed step", "adaptive step", "ode15s")
 end
 %% Adiabatic CSTR 3D
 if mode == 2
+%Use RK4 with fixed and adaptive step size on the adiabatic CSTR 3D problem
 parameters = CSTRparameters();
 x0 = CSTRx0(parameters);
 parmcstr = @(t,x) CSTRf(t,x,parameters);
@@ -63,6 +69,7 @@ legend("fixed step", "step doubling", "ode15s")
 end
 %% Adiabatic CSTR 1D
 if mode == 3
+%RK4 with and without adaptive step size on CSTR 1D problem
 parameters = CSTRparameters();
 x0 = 273.15;
 parmcstr = @(t,x) CSTR1Df(t,x,parameters);
@@ -84,9 +91,12 @@ legend("fixed step", "step doubling", "ode15s")
 end
 %% RK4 order and Test Equation
 if mode == 4
+%Find the order of RK4 by comparing the error of different fixed step sizes
+%when approximating th etest equation up to t=1
 global_error = [];
 h = [];
 
+% Get a nice amount of h sizes
 for i=10:1:20
     [X, T] = RK4FixedStepSize([1.0], @testf, 1.0/i, 0, 1, 1);
     global_error = [global_error; abs(X(end)-exp(1))];
@@ -108,19 +118,17 @@ for i=200:100:700
     h = [h;1.0/i];
 end
 
-hbase = global_error(end)/ h(end)^4;
+%Compare the error to h^4, since this will show linearity if it is O(h^4)
 plot(h.^4, global_error, 'Color', 'blue')
-hold on
-%plot(h, h.^4*0.019, 'Color', 'green')
-hold off
 title("Global error vs h^4 for classical Runge Kutta")
 xlabel("h^4")
 ylabel("global error")
 legend(["Global error"])
-saveas(gcf, "classical_rk_global_error.pdf")
 end
 %% RK4 stability
 if mode == 5
+%Calculate |R(z)| in the square -4,-4 to 4,4. Everywhere |R(z)| < 1,
+%absolute stability
 x = -4:0.01:4;
 y = -4:0.01:4;
 v = @(z) abs(1+ z + 1/2*z^2 + 1/6*z^3 + 1/24*z^4);
@@ -131,7 +139,6 @@ for n=1:length(x)
         value(k,n) = v((x(n)+y(k)*1i));
     end
 end
-d = 255/5;
 value(value>1) = 1;
 image([-4,4], [-4,4], value, 'CDataMapping', 'scaled')
 colorbar

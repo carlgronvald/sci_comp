@@ -1,6 +1,5 @@
 function [J] = vanderpoljac(t, x, parameters)
-%VANDERPOLF Summary of this function goes here
-%   Detailed explanation goes here
+%VANDERPOLF Jacobian of the Van der Pol problem
 J = zeros(2,2);
 J(1,1) = 0;
 J(1,2) = 1;

@@ -1,18 +1,15 @@
 function [X,T] = ESDIRK23(x0, f, jac, h0, t0,t1, abstol, reltol, parameters)
-%ESDIRK23 Does some partially implicit partially explicit stuff I think
-%jac = function that evaluates dx, jacobian
-%
+%ESDIRK23 A singly diagonally implicit, otherwise explicit Runge Kutta
+%method. It has an A-stable, L-stable forward integrator of order 2, and an
+%embedded method of order 3, that is really unstable.
+
 if size(x0,2) > 1
     error("x0 should be pased as column vector!")
 end
-
     epsilon = 0.8;
     gamma = (2-sqrt(2))/2;
-    max_iter = 100;
-    num_variables = size(x0, 1);
-    
-    
-    %TODO: epstol, facmin, facmax
+    newtonMaxiterations = 100;
+    newtonTolerance = 1e-8;
     
     bs = [ (1-gamma)/2; ...
         (1-gamma)/2; ...
@@ -56,17 +53,19 @@ end
             Ts(i) = t + cs(i)*h;
             Xs(:,i) = x + cs(i)*h*fs(:,1);
             divergent = true;
-            while divergent
-                [Xres, fres, divergent] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, 50, 0.00000001, parameters);
-                if divergent
-                    divcount = divcount + 1;
-                    h = h/2;
-                    break;
-                end
-            end
-            if divergent
+%            while divergent
+            [Xres, fres, divergent] = NewtonsMethodESDIRK(Xs(:,i), Ts(i), f, h, gamma, psi, L, U, P, newtonMaxiterations, newtonTolerance, parameters);
+            if divergent %If we diverge, we redo iteration with h=h/2.
+                divcount = divcount + 1;
+                h = h/2;
                 break;
             end
+%            end
+%            if divergent %This is because we cannot continue all the way to
+                % the outer loop from the inner loop, so we have to
+                % break a couple times first
+%                break;
+%            end
             Xs(:,i) = Xres;
             fs(:,i) = fres;
         end
@@ -77,6 +76,11 @@ end
         
         e = h*fs*ds;
         r = max(abs(e) ./ (abstol + abs(x)*reltol));
+        %Clamping the change in h to some factor turned out empirically to
+        % give quite a lot worse results, likely due to how well ESDIRK
+        % deals with meeting an unstable area of the function anyway (since
+        % the Newton step will diverge and it will automatically reduce h
+        % anyway).
         if r<=1
             tmp = h; %Save old value of h
             if n==1 %Asymptotic error control for first step
@@ -89,12 +93,10 @@ end
             X = [X x];
             T = [T;t];
             n = n+1;
-            rlast = r; hlast = tmp;
-        else
-            h = (epsilon/r)^(1/3)*h;
+            rlast = r; hlast = tmp; %We use the last values of h and r again next loop.
+        else %Asymptotic error control if we do not accept step
+            h = (epsilon/r)^(1/3)*h; 
         end
     end
     X = X';
     T = T';
-    disp("divcount")
-    disp(divcount)

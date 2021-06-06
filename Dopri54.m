@@ -1,19 +1,20 @@
 function [X,T] = Dopri54(x0, f, h0, t0, t1, abstol, reltol, params)
-%DOPRI54 Summary of this function goes here
-%   Detailed explanation goes here
+%DOPRI54 Solves an ODE using the DOPRI54 method, which is a seven-stage
+%method with a fifth-order forward integrator and a fourth-order embedded
+%method.
 if size(x0,2) > 1
     error("x0 should be pased as column vector!")
 end
 
-%Constants for asymptotic error control
+%Constants for error control
 epstol = 0.8;
 facmin = 0.1;
 facmax = 5;
 
 %Constants for PI error control
-% p of not-embedded method = 4, so p+1=5
-kI = 0.3/5;
-kP = 0.4/5;
+% p of not-embedded method = 5, so p+1=6
+kI = 0.3/6;
+kP = 0.4/6;
 
 h = h0;
 t = t0;
@@ -21,9 +22,10 @@ x = x0;
 X = x;
 T = t;
 
-KuttaConstants = zeros(length(x0),7);
-KuttaTimes = zeros(1,7);
-%eigth row is best estimate; ninth row is error estimate
+%KuttaNumbers are the inner Xs of the Runge Kutta method
+KuttaNumbers = zeros(length(x0),7);
+%The butcher tableau is below
+%eigth row is best estimate; ninth row is the error measure.
 Butcher = [0 1/5 3/10 4/5 8/9 1 1 0 0; ... 
     0 1/5 3/40 44/45 19372/6561 9017/3168 35/384 5179/57600 71/57600; ... 
     0 0 9/40 -56/15 -25360/2187 -355/33 0 0 0; ...
@@ -33,6 +35,7 @@ Butcher = [0 1/5 3/10 4/5 8/9 1 1 0 0; ...
     0 0 0 0 0 0 11/84 187/2100 22/525; ...
     0 0 0 0 0 0 0 1/40 -1/40]';
 
+%We need previous r to use the PI controller
 rold = 1;
 while t < t1
     if t+h >t1
@@ -41,40 +44,29 @@ while t < t1
    
     AcceptStep = false;
     KuttaNumbers(:,1) = x;
+    % We have an adaptive step, so we go until we find an acceptable step
     while ~AcceptStep
-        %disp("Not accepting step");
         hButcher = Butcher*h;
         
         
-       % KuttaConstants(:,1) = X(:,i);
-        %KuttaTimes = T(i) + hButcher(1:4, 1);
-        %for s = 2:4
-        %    KuttaConstants(:,s) = X(:,i) + hButcher(s, 2:s) * f(KuttaTimes(1:s-1),KuttaConstants(1,1:s-1),params)';
-        %end
-
-        %X(:,i+1) = X(:,i) +  hButcher(5,2:5) * f(KuttaTimes, KuttaConstants, params)';
-        %T(i+1) = T(i)+h;
-        
         KuttaTimes = t + hButcher(1:7, 1);
-        kuttafs = zeros(length(x0),7);
+        kuttafs = zeros(length(x0),7); %Kuttafs holds f of each stage so we
+        % only have to calculate it once per stage
         kuttafs(:,1) = f(KuttaTimes(1), KuttaNumbers(:,1), params);
-        for s = 2:7
+        for s = 2:7 % For every stage, calculate the next X 
             KuttaNumbers(:,s) = x;
             for l = 1:s-1
                 KuttaNumbers(:,s) = KuttaNumbers(:,s) + hButcher(s, l+1) * kuttafs(:, l);
             end
             kuttafs(:,s) = f(KuttaTimes(s), KuttaNumbers(:,s), params);
-%            + hButcher(s, 2:s) * f(KuttaTimes(1:s-1),KuttaNumbers(1,1:s-1),params)';
         end
         
         e = 0;
         xhat = x;
-        for l = 1:7
+        for l = 1:7 %Calculate the error by summing over stages
             e = e + hButcher(9, l+1) * kuttafs(:,   l);
             xhat = xhat + hButcher(8, l+1) * kuttafs(:,l);
         end
-%    	e = hButcher(9,2:8) * f(KuttaTimes, KuttaNumbers, params)';
-%        xhat = x + hButcher(8,2:8) * f(KuttaTimes, KuttaNumbers, params)';
         r = max(abs(e)./max(abstol, xhat.*reltol));
         
         AcceptStep = (r <= 1.0);
@@ -85,8 +77,8 @@ while t < t1
             T = [T,t];
             h = max(  min((epstol/r)^kI * (rold/r)^kP, facmax), facmin  )*h;
             rold = r;
-        else
-            h = max( min( (epstol/r)^(1/5), facmax), facmin) * h;
+        else %Use asymptotic controller
+            h = max( min( (epstol/r)^(1/6), facmax), facmin) * h;
         end
     end
     

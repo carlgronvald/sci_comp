@@ -1,6 +1,19 @@
 function [X,T] = ODESolver(x0, f, jac, h0, t0, t1, abstol, reltol, solver, parameters)
-%ODESOLVER Summary of this function goes here
-%   Detailed explanation goes here
+%ODESOLVER - Solves an ODE IVP using the given solver
+% x0 - initial point
+% f - handle for the ODE function, dx = f(t,x,parameters)
+% jac - ODE function jacobian, only used for implicit methods.
+% h0 - Starting step size. For fixed step size methods, this is the step
+% size across the board.
+% t0 - starting time.
+% t1 - time we're approximating to
+% abstol - Absolute tolerance of adaptive step size methods, not used by
+% fixed step size methods
+% reltol - Relative tolerance of adaptive step size methods, not used by
+% fixed step size methods.
+% solver - the solver you wish to use, see below.
+% parameters - parameters for the ODE function and its jacobian
+%
 % solvers: 'ExplicitEulerFixedStepSize', 'ExplicitEulerStepDoubling',
 % 'ImplicitEulerFixedStepSize', 'ImplicitEulerStepDoubling',
 % 'Dopri54AdaptiveStepSize', 'RK4FixedStepSize', 'RK4StepDoubling',

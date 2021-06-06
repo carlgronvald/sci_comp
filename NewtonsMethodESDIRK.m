@@ -1,6 +1,24 @@
 function [Xres, fres, divergent] = NewtonsMethodESDIRK(X, T, f, h, gamma, psi, L, U, P, max_iter, epsilon, parameters)
-%NEWTONSMETHODESDIRK Summary of this function goes here
-%   Detailed explanation goes here
+%NEWTONSMETHODESDIRK A modified Newton's method using some improvements for
+%ESDIRK23. Exits early in case of divergence, and counts slow convergence
+%as divergence
+% Note that this method does not calculate the Jacobian each time, but
+% instead uses the factorization of the iteration matrix M. This is one
+% reason we would rather just retry if we do not converge well, since the
+% issue is likely with the M matrix that needs refactorization
+%
+% X - Initial guess for this stage of ESDIRK23
+% T - time step of this stage of ESDIRK23
+% f - the ODE function
+% h - The timestep
+% gamma - gamma for the ESDIRK method
+% psi - Remainder term in the expression for the resdiual
+% L - L from the LU factorization of M
+% U - U from the LU factorization of M
+% P - permutation matrix from the LU factorization of M
+% max_iter - maximum number of iterations
+% epsilon - tolerance for size of the residual
+% parameters - parameters for the ODE function
     R = Inf(size(X,1), 1);
     iter = 0;
     divergent = false;

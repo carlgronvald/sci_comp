@@ -1,6 +1,5 @@
 function [jac] = testjac(t, x, parameters)
-%TESTJAC Summary of this function goes here
-%   Detailed explanation goes here
+%TESTJAC Jacobian of the equation dx=lambda x
 jac = eye(size(x))*parameters;
 
 end

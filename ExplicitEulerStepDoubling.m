@@ -25,11 +25,14 @@ while t < t1
     
     AcceptStep = false;
     
+    %Precompute f at the current location.
     xdot = f(t, x, params);
     
     while ~AcceptStep %Keep trying until we find a step with sufficiently small error.
         x1 = x + h*xdot;
         
+        %Calculate a better error estimate by stepping twice with half the
+        %step size.
         hhalf = 0.5*h;
         thalfstep = t + hhalf;
         xhalfstep = x + xdot*hhalf;
@@ -40,8 +43,7 @@ while t < t1
         e = x1doublestep-x1;
         % For each x variable, find the relation between either the
         % absolute tolerance or the relative tolerance times the estimated
-        % correct value (whichever is ?? WHY BEST TODO). Use the best of
-        % those as r
+        % correct value (whichever is the least bad)
         % (kind of a how-bad-are-we but normalized estimate)
         r = max(abs(e)./max(abstol, x1doublestep.*reltol));
         
@@ -54,10 +56,11 @@ while t < t1
             X = [X,x];
         end
         
-        % Calculate sqrt(epstol/r) - this is the 'largest step' (because of
-        % 2nd order TODO). Then clamp between facmin and facmax, since we
-        % don't change h by anymore than those factors, and multiply h
-        % by them.
+        % Use asymptotic step control.
+        % Calculate sqrt(epstol/r) - this is the 'largest step' (because
+        % explicit euler is a first order method). Then clamp between
+        % facmin and facmax, since we don't change h by anymore than those
+        % factors, and multiply h by them.
         h = max(facmin, min( sqrt(epstol/r), facmax))*h;
     end
 end
