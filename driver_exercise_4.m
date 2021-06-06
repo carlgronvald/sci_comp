@@ -1,3 +1,6 @@
+% 1 == Van der Pol SDE
+% 2 == CSTR 3D SDE
+% 3 == CSTR 1D SDE
 mode = 1;
 
 if mode == 1

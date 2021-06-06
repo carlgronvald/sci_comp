@@ -1,8 +1,5 @@
-% 1 == Van der Pol RK4
-% 2 == CSTR 3D RK4
-% 3 == CSTR 1D RK4
-% 4 == Order RK4
-% 5 == RK4 Stability
+% 1 == Van der Pol RK$
+% 2 == CSTR 3D
 mode = 1;
 %% Van der Pol
 if mode == 1
@@ -82,8 +79,7 @@ xlabel("t [s]")
 ylabel("T [K]")
 legend("fixed step", "step doubling", "ode15s")
 end
-%% RK4 order and Test Equation
-if mode == 4
+
 global_error = [];
 h = [];
 
@@ -118,25 +114,3 @@ xlabel("h^4")
 ylabel("global error")
 legend(["Global error"])
 saveas(gcf, "classical_rk_global_error.pdf")
-end
-%% RK4 stability
-if mode == 5
-x = -4:0.01:4;
-y = -4:0.01:4;
-v = @(z) abs(1+ z + 1/2*z^2 + 1/6*z^3 + 1/24*z^4);
-
-value = zeros(length(y), length(x));
-for n=1:length(x)
-    for k=1:length(y)
-        value(k,n) = v((x(n)+y(k)*1i));
-    end
-end
-d = 255/5;
-value(value>1) = 1;
-image([-4,4], [-4,4], value, 'CDataMapping', 'scaled')
-colorbar
-title("|R(z)|, Classical Runge Kutta")
-xlabel("Re(z)")
-ylabel("Im(z)")
-
-end

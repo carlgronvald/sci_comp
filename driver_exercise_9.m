@@ -1,4 +1,9 @@
+% 1 == Approximate test equation to t=5
+% 2 == Oscillating euler CSTR approximation
+mode = 1;
 
+
+if mode == 1
 solvers = ["ExplicitEulerFixedStepSize";"ExplicitEulerStepDoubling";"ImplicitEulerFixedStepSize"; ...
     "ImplicitEulerStepDoubling";"RK4FixedStepSize";"RK4StepDoubling";"DOPRI54";"ESDIRK23"];
 %     EE     EEA     IE     IEA   RK4   RK4A  DO    ES
@@ -32,6 +37,26 @@ title("The test equation dx=x")
 xlabel("t")
 ylabel("x(t)")
 disp([counts Jcounts times err])
+
+end
+
+%% CSTR1D explicit euler oscillating
+if mode==2
+parameters = CSTRparameters();
+x0 = 273.15;
+parmcstr = @(t,x) CSTR1Df(t,x,parameters);
+[X1,T1] = ExplicitEulerFixedStepSize(x0, @CSTR1Df, 50, 0, 400, parameters);
+[Tcorrect, Xcorrect] = ode15s(parmcstr, [0 400], x0);
+
+hold off
+plot(T1, X1)
+hold on
+plot(Tcorrect, Xcorrect)
+xlabel("t [s]")
+ylabel("T [K]")
+title("1D CSTR, temperature, explicit Euler, oscillations")
+legend("fixed step", "ode15s")
+end
 function dx = testcounter(t,x,p)
     global counter;
     dx = testf(t,x,p);

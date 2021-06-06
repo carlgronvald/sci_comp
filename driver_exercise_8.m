@@ -1,7 +1,8 @@
-% 1 == Van der Pol
-% 2 == CSTR 3D
-% 3 == CSTR 1D
-% 4 == Extreme Van der Pol
+% 1 == Van der Pol ESDIRK23
+% 2 == CSTR 3D ESDIRK23
+% 3 == CSTR 1D ESDIRK23
+% 4 == Extreme Van der Pol, mu=500
+% 5 == ESDIRK23 forward integrator stability
 mode = 4;
 %% Van der Pol
 if mode == 1
@@ -87,21 +88,21 @@ global Jcounter;
 counter=0;
 Jcounter=0;
 
-tic;
+start = cputime;
 [X1,T1] = ESDIRK23(x0, @vpcounter, @vpjcounter, 0.01, 0, 800, 0.01, 0.01, parameters);
-disp(toc);
+disp(cputime-start);
 disp(["counter", counter, "JCounter", Jcounter]);
 
 counter =0;
-tic;
+start = cputime;
 [X2,T2] = Dopri54(x0, @vpcounter, 0.01, 0, 800, 0.01, 0.01, parameters);
-disp(toc);
+disp(cputime-start);
 disp(["counter", counter])
 
 counter = 0;
-tic;
+start = cputime;
 [X3,T3] = RK4StepDoubling(x0, @vpcounter, 0.01, 0, 800, 0.01, 0.01, parameters);
-disp(toc)
+disp(cputime-start)
 disp(["counter", counter])
 counter=0;
 tic
@@ -120,6 +121,29 @@ xlabel("t")
 ylabel("x(1)")
 legend("ESDIRK23", "DOPRI54", "RK4 step doubling", "ode15s")
 end
+
+%% Esdirk Stability
+if mode == 5
+x = -10:0.01:15;
+y = -10:0.01:10;
+g = (2 - sqrt(2))/2;
+v = @(x,y) abs((1 + (1-2*g)*(x + y*1i))/( (1 - g * (x+y*1i))^2));
+
+value = zeros(length(y), length(x));
+for n=1:length(x)
+    for k=1:length(y)
+        value(k,n) = v(x(n),y(k));
+    end
+end
+d = 255/5;
+value(value>1) = 1;
+image([-10,15], [-10,10], value, 'CDataMapping', 'scaled')
+colorbar
+title("|R(z)|, ESDIRK23 Forward Integrator")
+xlabel("Re(z)")
+ylabel("Im(z)")
+end
+
 
 function dx = vpcounter(t,x,p)
     global counter;
