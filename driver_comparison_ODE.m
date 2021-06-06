@@ -1,15 +1,21 @@
 
 %% Van der Pol
 
+solvers = ["ExplicitEulerFixedStepSize";"ExplicitEulerStepDoubling";"ImplicitEulerFixedStepSize"; ...
+    "ImplicitEulerStepDoubling";"RK4FixedStepSize";"RK4StepDoubling";"DOPRI54";"ESDIRK23"];
+h0 = [0.014, 0.01, 0.042, 0.01, 0.1, 0.1, 0.1, 0.1];
+
 parameters = CreateParams('mu', 1.5);
 x0 = [1.0;1.0];
 counts = zeros(8,1);
 global counter;
+figure
 counter = 0;
-[X1,T1] = ExplicitEulerFixedStepSize(x0, @vpcounter, 0.1, 0, 40, parameters);
+[X1,T1]=ODESolver(x0, @vpcounter, @vanderpoljac, 0.1, 0, 40, 0.01, 0.01, 'ExplicitEulerFixedStepSize', parameters);
+%[X1,T1] = ExplicitEulerFixedStepSize(x0, @vpcounter, 0.1, 0, 40, parameters);
 counts(1) = counter;
 counter = 0;
-[X2,T2] = ExplicitEulerStepDoubling(x0, @vpcounter, 0.1, 0, 40, 0.01, 0.01, parameters);
+[X1,T1]=ODESolver(x0, @vpcounter, @vanderpoljac, 0.1, 0, 40, 0.01, 0.01, 'ExplicitEulerStepDoubling', parameters);
 counts(2) = counter;
 counter = 0;
 [X3,T3] = ImplicitEulerFixedStepSize(x0, @vpcounter, @vanderpoljac, 0.1, 0, 40, parameters);
@@ -141,4 +147,15 @@ function dx = vpcounter(t,x,p)
     global counter;
     dx = vanderpolf(t,x,p);
     counter = counter+1;
+end
+
+function dx = testcounter(t,x,p)
+    global counter;
+    dx = testf(t,x,p);
+    counter = counter+1;
+end
+function J = testJcounter(t,x,p)
+     global Jcounter;
+     J = testjac(t,x,p);
+     Jcounter = Jcounter+1;
 end

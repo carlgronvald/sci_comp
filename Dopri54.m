@@ -42,7 +42,6 @@ while t < t1
     AcceptStep = false;
     KuttaNumbers(:,1) = x;
     while ~AcceptStep
-
         %disp("Not accepting step");
         hButcher = Butcher*h;
         

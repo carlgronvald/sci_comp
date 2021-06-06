@@ -40,7 +40,8 @@ while t < t1
         e = x1doublestep-x1;
         % For each x variable, find the relation between either the
         % absolute tolerance or the relative tolerance times the estimated
-        % correct value (whichever is best?? WHY BEST TODO). Use the worst of those as r
+        % correct value (whichever is ?? WHY BEST TODO). Use the best of
+        % those as r
         % (kind of a how-bad-are-we but normalized estimate)
         r = max(abs(e)./max(abstol, x1doublestep.*reltol));
         
